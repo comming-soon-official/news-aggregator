@@ -1,6 +1,7 @@
 import { Newspaper } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
+import { useFetchNews } from '@/hooks/useFetchNews'
 import { formatDate, truncateString } from '@/utils'
 
 import { Button } from '../ui/button'
@@ -9,37 +10,39 @@ import { NewsArticleTypes } from './types'
 
 const NewsFeed = () => {
     const [articleData, setArticleData] = useState([])
+    const { data } = useFetchNews()
     useEffect(() => {
         const fetchAPI = async () => {
             const response = await fetch(
                 'https://newsapi.org/v2/top-headlines?country=us&apiKey=87d4f68cf07b4abd82306e2726af365a'
             )
             const data = await response.json()
-            console.log(data)
 
             setArticleData(data?.articles)
         }
         fetchAPI()
     }, [])
+    console.log(data)
 
     return (
-        <div className="flex justify-center w-1/3">
-            <Card className="w-[600px]">
+        <div className="w-full">
+            <h2 className="text-2xl font-semibold">Urgent News Feed</h2>
+            <Card className="w-full">
                 {articleData
                     .filter(
                         (article: NewsArticleTypes) =>
-                            article.title !== 'Removed'
+                            article.title !== '[Removed]'
                     )
-                    .map((article: NewsArticleTypes) => {
+                    .map((article: NewsArticleTypes, i) => {
                         return (
-                            <div className="my-4 border-b">
+                            <div className="my-4 border-b" key={i}>
                                 <CardHeader className="">
-                                    <div className="flex gap-2">
+                                    <div className="flex flex-col gap-2 lg:flex-row">
                                         {article.urlToImage && (
                                             <img
                                                 src={article.urlToImage}
                                                 alt={article.title}
-                                                className="object-contain w-1/2 rounded-md"
+                                                className="object-contain w-full rounded-md lg:w-1/2"
                                             />
                                         )}
                                         <div>

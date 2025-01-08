@@ -6,8 +6,10 @@ import UrgentNews from '@/components/internal/UrgentNews'
 
 const Body = () => {
     return (
-        <div className="flex justify-around w-full gap-5 mt-20">
-            <SideFilters />
+        <div className="flex flex-col justify-around w-full gap-5 mt-20 lg:flex-row">
+            <span className="hidden lg:block">
+                <SideFilters />
+            </span>
             <NewsFeed />
             <UrgentNews />
         </div>
