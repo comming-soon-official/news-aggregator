@@ -1,11 +1,12 @@
-import React from 'react'
+import Navbar from '@/layout/Navbar'
 
-import Navbar from '@/components/internal/Navbar'
+import Body from './Body'
 
 const Home = () => {
     return (
         <div className="p-4">
             <Navbar />
+            <Body />
         </div>
     )
 }
