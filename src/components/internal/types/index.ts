@@ -3,7 +3,7 @@ export type SourceTypes = {
     name: string
 }
 
-export type NewsArticleTypes = {
+export type NewsAPITypes = {
     author: string
     content: string
     description: string
@@ -12,4 +12,33 @@ export type NewsArticleTypes = {
     title: string
     url: string
     urlToImage: string
+}
+
+export type NYTimesTypes = {
+    title: string
+    abstract: string
+    byline: string
+    created_date: string
+    url: string
+    multimedia?: Array<{
+        url: string
+        format: string
+        height: number
+        width: number
+        type: string
+    }>
+}
+
+export type GuardianAPITypes = {
+    apiUrl: string
+    id: string
+    isHosted: boolean
+    pillarId: string
+    pillarName: string
+    sectionId: string
+    sectionName: string
+    type: string
+    webPublicationDate: string
+    webTitle: string
+    webUrl: string
 }

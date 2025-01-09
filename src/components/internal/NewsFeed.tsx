@@ -1,39 +1,23 @@
 import { Newspaper } from 'lucide-react'
-import { useEffect, useState } from 'react'
 
 import { useFetchNews } from '@/hooks/useFetchNews'
 import { formatDate, truncateString } from '@/utils'
 
 import { Button } from '../ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '../ui/card'
-import { NewsArticleTypes } from './types'
+import { NewsAPITypes } from './types'
 
 const NewsFeed = () => {
-    const [articleData, setArticleData] = useState([])
     const { data } = useFetchNews()
-    useEffect(() => {
-        const fetchAPI = async () => {
-            const response = await fetch(
-                'https://newsapi.org/v2/top-headlines?country=us&apiKey=87d4f68cf07b4abd82306e2726af365a'
-            )
-            const data = await response.json()
-
-            setArticleData(data?.articles)
-        }
-        fetchAPI()
-    }, [])
-    console.log(data)
-
     return (
         <div className="w-full">
-            <h2 className="text-2xl font-semibold">Urgent News Feed</h2>
+            <h2 className="text-2xl font-semibold">Your News Feed</h2>
             <Card className="w-full">
-                {articleData
+                {data
                     .filter(
-                        (article: NewsArticleTypes) =>
-                            article.title !== '[Removed]'
+                        (article: NewsAPITypes) => article.title !== '[Removed]'
                     )
-                    .map((article: NewsArticleTypes, i) => {
+                    .map((article: NewsAPITypes, i) => {
                         return (
                             <div className="my-4 border-b" key={i}>
                                 <CardHeader className="">
@@ -42,7 +26,7 @@ const NewsFeed = () => {
                                             <img
                                                 src={article.urlToImage}
                                                 alt={article.title}
-                                                className="object-contain w-full rounded-md lg:w-1/2"
+                                                className="object-cover w-full h-64 rounded-md lg:w-96"
                                             />
                                         )}
                                         <div>

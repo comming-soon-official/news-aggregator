@@ -1,12 +1,11 @@
 import { Newspaper } from 'lucide-react'
-import React from 'react'
 
 import { useUrgentNews } from '@/hooks/useFetchNews'
 import { formatDate, truncateString } from '@/utils'
 
 import { Button } from '../ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '../ui/card'
-import { NewsArticleTypes } from './types'
+import { NewsAPITypes } from './types'
 
 const UrgentNews = () => {
     const { data, loading, error } = useUrgentNews()
@@ -14,14 +13,13 @@ const UrgentNews = () => {
 
     return (
         <div className="w-1/3">
-            <h2 className="text-2xl font-semibold">Your News Feed</h2>
+            <h2 className="text-2xl font-semibold">Hot News</h2>
             <Card className="w-full">
                 {data
                     .filter(
-                        (article: NewsArticleTypes) =>
-                            article.title !== '[Removed]'
+                        (article: NewsAPITypes) => article.title !== '[Removed]'
                     )
-                    .map((article: NewsArticleTypes) => {
+                    .map((article: NewsAPITypes) => {
                         return (
                             <div className="my-4 border-b">
                                 <CardHeader className="">

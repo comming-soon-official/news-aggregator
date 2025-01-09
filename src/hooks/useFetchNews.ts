@@ -1,6 +1,11 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 
+import {
+    GuardianAPITypes,
+    NewsAPITypes,
+    NYTimesTypes
+} from '@/components/internal/types'
 import { useUniversalStore } from '@/store/useUniversalStore'
 
 const NEWS_API_KEY = import.meta.env.VITE_NEWS_API_KEY
@@ -19,21 +24,77 @@ export const useFetchNews = () => {
 
     // Helper functions remain the same
     const fetchNewsAPI = async () => {
-        const url = `https://newsapi.org/v2/everything?q=${searchQuery}&from=${filters.dateRange[0]}&to=${filters.dateRange[1]}&category=${filters.category}&sources=${filters.source}&apiKey=${NEWS_API_KEY}`
-        const response = await axios.get(url)
-        return response.data.articles
+        try {
+            // const url = `https://newsapi.org/v2/everything?q=${searchQuery}&from=${filters.dateRange[0]}&to=${filters.dateRange[1]}&category=${filters.category}&sources=${filters.source}&apiKey=${NEWS_API_KEY}`
+            const url = `https://newsapi.org/v2/top-headlines?country=us&apiKey=${NEWS_API_KEY}`
+            const response = await axios.get(url)
+            const formattedArticles = response.data.articles.map(
+                (article: NewsAPITypes) => ({
+                    title: article.title,
+                    content: article.content,
+                    author: article.author,
+                    description: article.description,
+                    publishedAt: article.publishedAt,
+                    source: article.source,
+                    url: article.url,
+                    urlToImage: article.urlToImage
+                })
+            )
+
+            return formattedArticles
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     const fetchNYT = async () => {
-        const url = `https://api.nytimes.com/svc/search/v2/articlesearch.json?q=${searchQuery}&begin_date=${filters.dateRange[0]}&end_date=${filters.dateRange[1]}&fq=section_name:("${filters.category}")&api-key=${NYT_API_KEY}`
-        const response = await axios.get(url)
-        return response.data.response.docs
+        try {
+            const url = `https://api.nytimes.com/svc/topstories/v2/world.json?api-key=${NYT_API_KEY}`
+            const response = await axios.get(url)
+            console.log(response.data.results)
+
+            const formattedArticles = response.data.results.map(
+                (article: NYTimesTypes) => ({
+                    title: article.title,
+                    content: article.abstract, // Using abstract as content since NYT API doesn't provide full content
+                    author: article.byline.replace('By ', ''), // Remove 'By ' prefix from byline
+                    description: article.abstract,
+                    publishedAt: article.created_date,
+                    source: { id: 'nytimes', name: 'New York Times' },
+                    url: article.url,
+                    urlToImage: article.multimedia?.[0]?.url || '' // Get the first multimedia image URL if available
+                })
+            )
+
+            return formattedArticles
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     const fetchGuardian = async () => {
-        const url = `https://content.guardianapis.com/search?q=${searchQuery}&from-date=${filters.dateRange[0]}&to-date=${filters.dateRange[1]}&section=${filters.category}&api-key=${GUARDIAN_API_KEY}`
-        const response = await axios.get(url)
-        return response.data.response.results
+        try {
+            const url = `https://content.guardianapis.com/search?from-date=2025-01-01&to-date=2025-01-03&page-size=20&api-key=${GUARDIAN_API_KEY}`
+            const response = await axios.get(url)
+            console.log(response)
+
+            const formattedArticles = response.data.response.results.map(
+                (article: GuardianAPITypes) => ({
+                    title: article.webTitle,
+                    content: '', // Guardian API doesn't provide content in this endpoint
+                    author: '', // Guardian API doesn't provide author in this endpoint
+                    description: '', // Guardian API doesn't provide description in this endpoint
+                    publishedAt: article.webPublicationDate,
+                    source: { id: 'guardian', name: 'The Guardian' },
+                    url: article.webUrl,
+                    urlToImage: '' // Guardian API doesn't provide images in this endpoint
+                })
+            )
+
+            return formattedArticles
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     const fetchData = async () => {
@@ -58,7 +119,18 @@ export const useFetchNews = () => {
 
             const results = await Promise.all(fetchPromises)
             const combinedResults = results.flat()
-            setData(combinedResults)
+
+            // Fisher-Yates shuffle algorithm
+            const shuffledResults = [...combinedResults]
+            for (let i = shuffledResults.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1))
+                ;[shuffledResults[i], shuffledResults[j]] = [
+                    shuffledResults[j],
+                    shuffledResults[i]
+                ]
+            }
+
+            setData(shuffledResults)
         } catch (err) {
             setError(err as Error)
         } finally {
