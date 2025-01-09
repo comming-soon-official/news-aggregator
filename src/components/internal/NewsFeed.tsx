@@ -1,5 +1,6 @@
 import { Newspaper } from 'lucide-react'
 
+import { Skeleton } from '@/components/ui/skeleton'
 import { useFetchNews } from '@/hooks/useFetchNews'
 import { formatDate, truncateString } from '@/utils'
 
@@ -8,7 +9,36 @@ import { Card, CardContent, CardFooter, CardHeader } from '../ui/card'
 import { NewsAPITypes } from './types'
 
 const NewsFeed = () => {
-    const { data } = useFetchNews()
+    const { data, loading } = useFetchNews()
+
+    if (loading) {
+        return (
+            <div className="w-full">
+                <h2 className="text-2xl font-semibold">Your News Feed</h2>
+                <Card className="w-full">
+                    {[1, 2, 3, 4].map((item) => (
+                        <div key={item} className="my-4 border-b">
+                            <CardHeader>
+                                <div className="flex flex-col gap-2 lg:flex-row">
+                                    <Skeleton className="object-cover w-full h-64 rounded-md lg:w-96" />
+                                    <div className="w-full">
+                                        <div className="mb-2">
+                                            <Skeleton className="h-4 w-[100px] mb-2" />
+                                            <Skeleton className="h-4 w-[150px]" />
+                                        </div>
+                                        <Skeleton className="w-full h-6 mb-2" />
+                                        <Skeleton className="h-4 w-[90%] mb-2" />
+                                        <Skeleton className="h-4 w-[80%]" />
+                                    </div>
+                                </div>
+                            </CardHeader>
+                        </div>
+                    ))}
+                </Card>
+            </div>
+        )
+    }
+
     return (
         <div className="w-full">
             <h2 className="text-2xl font-semibold">Your News Feed</h2>

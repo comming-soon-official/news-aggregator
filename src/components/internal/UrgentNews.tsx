@@ -1,5 +1,6 @@
 import { Newspaper } from 'lucide-react'
 
+import { Skeleton } from '@/components/ui/skeleton'
 import { useUrgentNews } from '@/hooks/useFetchNews'
 import { formatDate, truncateString } from '@/utils'
 
@@ -9,7 +10,30 @@ import { NewsAPITypes } from './types'
 
 const UrgentNews = () => {
     const { data, loading, error } = useUrgentNews()
-    console.log(data)
+
+    if (loading) {
+        return (
+            <div className="w-1/3">
+                <h2 className="text-2xl font-semibold">Hot News</h2>
+                <Card className="w-full">
+                    {[1, 2, 3, 4].map((item) => (
+                        <div key={item} className="my-4 border-b">
+                            <CardHeader>
+                                <div className="flex flex-col gap-2">
+                                    <Skeleton className="w-full h-[200px] rounded-md" />
+                                    <div>
+                                        <Skeleton className="h-4 w-[100px] mb-2" />
+                                        <Skeleton className="w-full h-6 mb-2" />
+                                        <Skeleton className="h-4 w-[80%]" />
+                                    </div>
+                                </div>
+                            </CardHeader>
+                        </div>
+                    ))}
+                </Card>
+            </div>
+        )
+    }
 
     return (
         <div className="w-1/3">

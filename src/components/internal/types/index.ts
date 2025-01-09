@@ -29,6 +29,8 @@ export type NYTimesTypes = {
     }>
 }
 
+export type NYTimesSortOptions = 'relevance' | 'newest' | 'oldest'
+
 export type GuardianAPITypes = {
     apiUrl: string
     id: string
