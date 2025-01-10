@@ -38,69 +38,82 @@ const UrgentNews = () => {
     return (
         <div className="w-1/3">
             <h2 className="text-2xl font-semibold">Today's Hot News</h2>
-            <Card className="w-full">
-                {data
-                    .filter(
-                        (article: NewsAPITypes) => article.title !== '[Removed]'
-                    )
-                    .map((article: NewsAPITypes) => {
-                        return (
-                            <div className="my-4 border-b">
-                                <CardHeader className="">
-                                    <div className="flex flex-col gap-2">
-                                        {article.urlToImage && (
-                                            <img
-                                                src={article.urlToImage}
-                                                alt={article.title}
-                                                className="object-contain w-full rounded-md "
-                                            />
-                                        )}
-                                        <div>
-                                            <div className="mb-2">
-                                                <p className="text-sm opacity-80">
-                                                    {article.source.name}
-                                                </p>
-                                                <p className="text-sm opacity-80">
-                                                    {article.author}
-                                                </p>
-                                            </div>
-                                            <h2 className="text-xl font-semibold">
-                                                {truncateString(
-                                                    article.title,
-                                                    200
-                                                )}
-                                            </h2>
-                                        </div>
-                                    </div>
-                                </CardHeader>
-                                <CardContent>
-                                    <div>
-                                        <div>
-                                            <div>{article.description}</div>
-                                        </div>
-                                        <div></div>
-                                    </div>
-                                </CardContent>
-                                <CardFooter className="flex justify-between">
-                                    <div className="text-sm opacity-60">
-                                        {formatDate(article.publishedAt)}
-                                    </div>
-                                    <a href={article.url} target="_blank">
-                                        <Button
-                                            size={'sm'}
-                                            variant={'secondary'}
-                                            className="hover:underline"
-                                            onClick={() => {}}
-                                        >
-                                            <Newspaper />
-                                            Full Article
-                                        </Button>
-                                    </a>
-                                </CardFooter>
-                            </div>
+            {data.length > 0 ? (
+                <Card className="w-full">
+                    {data
+                        .filter(
+                            (article: NewsAPITypes) =>
+                                article.title !== '[Removed]'
                         )
-                    })}
-            </Card>
+                        .map((article: NewsAPITypes) => {
+                            return (
+                                <div className="my-4 border-b">
+                                    <CardHeader className="">
+                                        <div className="flex flex-col gap-2">
+                                            {article.urlToImage && (
+                                                <img
+                                                    src={article.urlToImage}
+                                                    alt={article.title}
+                                                    className="object-contain w-full rounded-md "
+                                                />
+                                            )}
+                                            <div>
+                                                <div className="mb-2">
+                                                    <p className="text-sm opacity-80">
+                                                        {article.source.name}
+                                                    </p>
+                                                    <p className="text-sm opacity-80">
+                                                        {article.author}
+                                                    </p>
+                                                </div>
+                                                <h2 className="text-xl font-semibold">
+                                                    {truncateString(
+                                                        article.title,
+                                                        200
+                                                    )}
+                                                </h2>
+                                            </div>
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div>
+                                            <div>
+                                                <div>{article.description}</div>
+                                            </div>
+                                            <div></div>
+                                        </div>
+                                    </CardContent>
+                                    <CardFooter className="flex justify-between">
+                                        <div className="text-sm opacity-60">
+                                            {formatDate(article.publishedAt)}
+                                        </div>
+                                        <a href={article.url} target="_blank">
+                                            <Button
+                                                size={'sm'}
+                                                variant={'secondary'}
+                                                className="hover:underline"
+                                                onClick={() => {}}
+                                            >
+                                                <Newspaper />
+                                                Full Article
+                                            </Button>
+                                        </a>
+                                    </CardFooter>
+                                </div>
+                            )
+                        })}
+                </Card>
+            ) : (
+                <Card className="w-full">
+                    <CardHeader>
+                        <div className="flex flex-col gap-2 lg:flex-row">
+                            <div className="flex items-center justify-center w-full">
+                                <h4 className="text-4xl">No Articles Found</h4>
+                            </div>
+                        </div>
+                    </CardHeader>
+                </Card>
+            )}
         </div>
     )
 }
