@@ -1,11 +1,8 @@
-import Navbar from '@/layout/Navbar'
-
 import Body from './Body'
 
 const Home = () => {
     return (
-        <div className="p-4">
-            <Navbar />
+        <div className="p-4 ">
             <Body />
         </div>
     )

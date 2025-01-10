@@ -10,6 +10,7 @@ import {
     SelectValue
 } from '../ui/select'
 import { Separator } from '../ui/separator'
+import SearchComponent from './search'
 
 const SideFilters = () => {
     const { newsChannels, toggleChannel, filters, write } = useUniversalStore()
@@ -24,9 +25,13 @@ const SideFilters = () => {
     ]
 
     const sources = [
-        { value: 'cnn', label: 'CNN' },
         { value: 'bbc-news', label: 'BBC News' },
-        { value: 'the-verge', label: 'The Verge' }
+        { value: 'cnn', label: 'CNN' },
+        { value: 'reuters', label: 'Reuters' },
+        { value: 'the-wall-street-journal', label: 'The Wall Street Journal' },
+        { value: 'bloomberg', label: 'Bloomberg' },
+        { value: 'associated-press', label: 'Associated Press' },
+        { value: 'the-washington-post', label: 'The Washington Post' }
     ]
     const handleDateChange = (values: {
         range: { from?: Date; to?: Date }
@@ -63,7 +68,9 @@ const SideFilters = () => {
     }
     return (
         <div className="space-y-8 ">
-            {/* News Sources Section */}
+            <section className="block lg:hidden">
+                <SearchComponent />
+            </section>
             <section>
                 <h2 className="mb-4 text-lg font-semibold">News Sources</h2>
                 <div className="flex flex-wrap gap-2">
@@ -82,7 +89,6 @@ const SideFilters = () => {
 
             <Separator />
 
-            {/* Filters Section */}
             <section className="space-y-6">
                 <h2 className="text-lg font-semibold">Filters</h2>
 

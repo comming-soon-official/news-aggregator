@@ -21,6 +21,7 @@ type NewsArticle = {
     source: { id: string; name: string }
     url: string
     urlToImage: string
+    api_source: string
 }
 
 type FilterParams = Record<string, string | undefined>
@@ -51,37 +52,54 @@ export const useFetchNews = () => {
     const { filters, searchQuery, newsChannels } = useUniversalStore()
 
     const buildNewsAPIUrl = (): string => {
-        const params = buildQueryParams({
-            q: searchQuery,
-            from:
-                filters.dateRange?.[0] &&
-                new Date(filters.dateRange[0]).toISOString().split('T')[0],
-            to:
-                filters.dateRange?.[1] &&
-                new Date(filters.dateRange[1]).toISOString().split('T')[0],
-            category: filters.category,
+        let params: Record<string, any> = {
+            q: searchQuery || 'news',
+            language: 'en',
             apiKey: NEWS_API_KEY
-        })
+        }
 
-        return `https://newsapi.org/v2/top-headlines?${params}`
+        if (filters.dateRange?.[0]) {
+            params.from = new Date(filters.dateRange[0])
+                .toISOString()
+                .split('T')[0]
+        }
+        if (filters.dateRange?.[1]) {
+            params.to = new Date(filters.dateRange[1])
+                .toISOString()
+                .split('T')[0]
+        }
+
+        if (filters.source) {
+            params.sources = filters.source
+        } else {
+            params.category = filters.category || 'general'
+        }
+
+        return `https://newsapi.org/v2/top-headlines?${buildQueryParams(
+            params
+        )}`
     }
 
     const buildNYTUrl = (): string => {
+        if (filters.category && !searchQuery) {
+            return `https://api.nytimes.com/svc/topstories/v2/${filters.category}.json?api-key=${NYT_API_KEY}`
+        }
+
         const params = buildQueryParams({
-            q: searchQuery, // Search query
+            q: searchQuery || 'latest',
             begin_date:
                 filters.dateRange?.[0] &&
                 new Date(filters.dateRange[0])
                     .toISOString()
                     .split('T')[0]
-                    .replace(/-/g, ''), // From date in YYYYMMDD format
+                    .replace(/-/g, ''),
             end_date:
                 filters.dateRange?.[1] &&
                 new Date(filters.dateRange[1])
                     .toISOString()
                     .split('T')[0]
-                    .replace(/-/g, ''), // To date in YYYYMMDD format
-            sort: 'relevance', // Default sort value
+                    .replace(/-/g, ''),
+            sort: 'relevance',
             'api-key': NYT_API_KEY
         })
 
@@ -96,7 +114,7 @@ export const useFetchNews = () => {
             'to-date':
                 filters.dateRange?.[1] &&
                 new Date(filters.dateRange[1]).toISOString().split('T')[0],
-            q: filters.category,
+            q: searchQuery || 'news', // Default query
             'api-key': GUARDIAN_API_KEY
         })
 
@@ -104,7 +122,7 @@ export const useFetchNews = () => {
     }
 
     const transformNewsAPI = (data: any): NewsArticle[] =>
-        data.articles.map((article: NewsAPITypes) => ({
+        data.articles?.map((article: NewsAPITypes) => ({
             title: article.title,
             content: article.content || '',
             author: article.author || 'Unknown',
@@ -112,30 +130,41 @@ export const useFetchNews = () => {
             publishedAt: article.publishedAt,
             source: article.source,
             url: article.url,
-            urlToImage: article.urlToImage || ''
-        }))
+            urlToImage: article.urlToImage || '',
+            api_source: 'NewsAPI'
+        })) || []
 
-    const transformNYT = (data: any): NewsArticle[] => {
-        if (!data?.response?.docs) {
-            return []
-        }
-
-        return data.response.docs.map((article: any) => ({
+    const transformNYT = (data: any): NewsArticle[] =>
+        data?.response?.docs?.map((article: any) => ({
             title: article.headline?.main || 'No title',
             content: article.lead_paragraph || '',
             author: article.byline?.original || 'Unknown',
             description: article.abstract || '',
             publishedAt: article.pub_date,
-            source: {
-                id: 'nyt',
-                name: 'The New York Times'
-            },
-            url: article.web_url
-        }))
-    }
+            source: { id: 'nyt', name: 'The New York Times' },
+            url: article.web_url,
+            urlToImage:
+                article.multimedia?.length > 0
+                    ? `https://www.nytimes.com/${article.multimedia[0].url}`
+                    : '',
+            api_source: 'NY Times'
+        })) || []
+
+    const transformNYTTopStories = (data: any): NewsArticle[] =>
+        data?.results?.map((article: any) => ({
+            title: article.title || 'No title',
+            content: article.abstract || '',
+            author: article.byline || 'Unknown',
+            description: article.abstract || '',
+            publishedAt: article.published_date,
+            source: { id: 'nyt', name: 'The New York Times' },
+            url: article.url,
+            urlToImage: article.multimedia?.[0]?.url || '',
+            api_source: 'NY Times'
+        })) || []
 
     const transformGuardian = (data: any): NewsArticle[] =>
-        data.response.results.map((article: GuardianAPITypes) => ({
+        data?.response?.results?.map((article: GuardianAPITypes) => ({
             title: article.webTitle,
             content: '',
             author: '',
@@ -143,8 +172,9 @@ export const useFetchNews = () => {
             publishedAt: article.webPublicationDate,
             source: { id: 'guardian', name: 'The Guardian' },
             url: article.webUrl,
-            urlToImage: ''
-        }))
+            urlToImage: '',
+            api_source: 'Guardian'
+        })) || []
 
     const fetchData = async () => {
         setLoading(true)
@@ -160,18 +190,21 @@ export const useFetchNews = () => {
                     case 'news_api':
                         return fetchFromAPI(buildNewsAPIUrl(), transformNewsAPI)
                     case 'new_york':
-                        return fetchFromAPI(buildNYTUrl(), transformNYT)
+                        const nytUrl = buildNYTUrl()
+                        const transformFn = nytUrl.includes('topstories')
+                            ? transformNYTTopStories
+                            : transformNYT
+                        return fetchFromAPI(nytUrl, transformFn)
                     case 'the_guardian':
                         return fetchFromAPI(
                             buildGuardianUrl(),
                             transformGuardian
                         )
                     default:
-                        return Promise.resolve([]) // Return an empty array for unknown channels
+                        return Promise.resolve([])
                 }
             })
 
-            // Use Promise.allSettled to handle both fulfilled and rejected promises
             const results = await Promise.allSettled(fetchPromises)
 
             const combinedResults = results
@@ -179,16 +212,10 @@ export const useFetchNews = () => {
                     (result): result is PromiseFulfilledResult<NewsArticle[]> =>
                         result.status === 'fulfilled'
                 )
-                .flatMap((result) => result.value) // Extract data from fulfilled promises
+                .flatMap((result) => result.value)
 
-            // Shuffle articles
-            const shuffledResults = combinedResults.sort(
-                () => Math.random() - 0.5
-            )
+            setData(combinedResults.sort(() => Math.random() - 0.5))
 
-            setData(shuffledResults)
-
-            // Log errors for failed APIs
             const errors = results
                 .filter(
                     (result): result is PromiseRejectedResult =>
@@ -200,7 +227,7 @@ export const useFetchNews = () => {
                 console.error('Some APIs failed:', errors)
             }
         } catch (err) {
-            setError(err as Error) // General fallback error
+            setError(err as Error)
         } finally {
             setLoading(false)
         }

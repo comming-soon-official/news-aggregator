@@ -9,12 +9,12 @@ import { Card, CardContent, CardFooter, CardHeader } from '../ui/card'
 import { NewsAPITypes } from './types'
 
 const UrgentNews = () => {
-    const { data, loading, error } = useUrgentNews()
+    const { data, loading } = useUrgentNews()
 
     if (loading) {
         return (
             <div className="w-1/3">
-                <h2 className="text-2xl font-semibold">Hot News</h2>
+                <h2 className="text-2xl font-semibold">Today's Hot News</h2>
                 <Card className="w-full">
                     {[1, 2, 3, 4].map((item) => (
                         <div key={item} className="my-4 border-b">
@@ -37,7 +37,7 @@ const UrgentNews = () => {
 
     return (
         <div className="w-1/3">
-            <h2 className="text-2xl font-semibold">Hot News</h2>
+            <h2 className="text-2xl font-semibold">Today's Hot News</h2>
             <Card className="w-full">
                 {data
                     .filter(

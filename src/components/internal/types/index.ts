@@ -14,6 +14,18 @@ export type NewsAPITypes = {
     urlToImage: string
 }
 
+export type NewsArticleTypes = {
+    author: string
+    content: string
+    description: string
+    publishedAt: string
+    source: SourceTypes
+    title: string
+    url: string
+    urlToImage: string
+    api_source: string
+}
+
 export type NYTimesTypes = {
     title: string
     abstract: string

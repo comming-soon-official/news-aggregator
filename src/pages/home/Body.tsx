@@ -1,5 +1,3 @@
-import React from 'react'
-
 import NewsFeed from '@/components/internal/NewsFeed'
 import SideFilters from '@/components/internal/SideFilters'
 import UrgentNews from '@/components/internal/UrgentNews'

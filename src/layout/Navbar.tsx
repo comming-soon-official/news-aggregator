@@ -1,52 +1,29 @@
 'use client'
 
-import { ListFilter, MenuIcon, Newspaper, Search } from 'lucide-react'
+import { Newspaper } from 'lucide-react'
 
-import SideFilters from '@/components/internal/SideFilters'
-import { Button } from '@/components/ui/button'
-import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer'
-import { Input } from '@/components/ui/input'
+import SearchComponent from '@/components/internal/search'
+import SideBar from '@/components/internal/SideBar'
 
 const Navbar = () => {
     return (
-        <>
-            <div className="flex items-center justify-around p-4">
-                <div className="flex items-center gap-2 text-2xl">
-                    {/* Only show drawer on small screens */}
+        <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <div className="container flex items-center h-16 px-4 justify-evenly">
+                <div className="flex items-center w-1/2 gap-4 justify-evenly">
                     <div className="lg:hidden">
-                        <Drawer direction="left">
-                            <DrawerTrigger asChild>
-                                <Button variant="outline" size="icon">
-                                    <MenuIcon className="w-4 h-4" />
-                                </Button>
-                            </DrawerTrigger>
-                            <DrawerContent className="w-[380px]">
-                                <div className="h-screen overflow-y-auto bg-background">
-                                    <div className="px-6 py-8">
-                                        <h1 className="mb-8 text-2xl font-bold">
-                                            News Filters
-                                        </h1>
-                                        <SideFilters />
-                                    </div>
-                                </div>
-                            </DrawerContent>
-                        </Drawer>
+                        <SideBar />
                     </div>
-                    <Newspaper />
-                    <p className="font-semibold">News</p>
+                    <div className="flex items-center gap-2">
+                        <Newspaper className="w-6 h-6" />
+                        <span className="text-xl font-semibold">News</span>
+                    </div>
                 </div>
-                <div className="flex items-center w-1/2 gap-2 lg:w-1/3">
-                    <Input type="search" placeholder="Search" />
-                    <Button>
-                        <ListFilter />
-                    </Button>
-                    <Button className="flex items-center">
-                        <Search className="-mt-1" />
-                        Search
-                    </Button>
+
+                <div className="hidden w-1/2 lg:block">
+                    <SearchComponent />
                 </div>
             </div>
-        </>
+        </nav>
     )
 }
 

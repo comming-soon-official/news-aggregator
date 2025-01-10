@@ -19,7 +19,7 @@ export default function SideBar() {
                     <MenuIcon className="w-4 h-4" />
                 </Button>
             </DrawerTrigger>
-            <DrawerContent className="w-[380px]">
+            <DrawerContent className="w-[80%]">
                 <div className="h-screen overflow-y-auto bg-background">
                     <div className="px-6 py-8">
                         <h1 className="mb-8 text-2xl font-bold">
