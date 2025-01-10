@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+    react-app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - '80:5173' # Maps port 5173 inside the container to port 80 on the host
+        environment:
+            - VITE_NEWS_API_KEY=${VITE_NEWS_API_KEY}
+            - VITE_THE_GUARDIAN_KEY=${VITE_THE_GUARDIAN_KEY}
+            - VITE_NY_NEWS_APP_ID=${VITE_NY_NEWS_APP_ID}
+            - VITE_NY_NEWS_KEY=${VITE_NY_NEWS_KEY}
+            - VITE_NY_NEWS_SECRET=${VITE_NY_NEWS_SECRET}
+        volumes:
+            - .:/app
+            - .env:/app/.env # Mount the .env file inside the container
+        networks:
+            - react-network
+        restart: unless-stopped
+
+networks:
+    react-network:
+        driver: bridge
