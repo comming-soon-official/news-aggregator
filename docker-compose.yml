@@ -6,7 +6,7 @@ services:
             context: .
             dockerfile: Dockerfile
         ports:
-            - '80:5173' # Maps port 5173 inside the container to port 80 on the host
+            - '5173:5173' # Maps port 5173 inside the container to port 80 on the host
         environment:
             - VITE_NEWS_API_KEY=${VITE_NEWS_API_KEY}
             - VITE_THE_GUARDIAN_KEY=${VITE_THE_GUARDIAN_KEY}
